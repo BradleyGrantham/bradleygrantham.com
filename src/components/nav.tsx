@@ -11,7 +11,10 @@ export function Nav() {
           Bradley Grantham
         </Link>
         <div className="flex gap-6 text-sm text-zinc-600 dark:text-zinc-400">
-          <Link href="/" className="hover:text-zinc-950 dark:hover:text-zinc-50">
+          <Link
+            href="/about"
+            className="hover:text-zinc-950 dark:hover:text-zinc-50"
+          >
             About
           </Link>
           <Link
@@ -19,6 +22,12 @@ export function Nav() {
             className="hover:text-zinc-950 dark:hover:text-zinc-50"
           >
             Blog
+          </Link>
+          <Link
+            href="/contact"
+            className="hover:text-zinc-950 dark:hover:text-zinc-50"
+          >
+            Contact
           </Link>
         </div>
       </nav>
