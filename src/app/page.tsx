@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { getAllPosts } from "@/lib/posts";
 import { formatDate } from "@/lib/format-date";
@@ -7,9 +8,20 @@ export default function Home() {
 
   return (
     <div className="mx-auto w-full max-w-2xl px-6 py-16">
-      <h1 className="text-2xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
-        Bradley Grantham
-      </h1>
+      <div className="flex items-center gap-4">
+        <Image
+          src="/images/profile.jpg"
+          alt="Bradley Grantham"
+          width={56}
+          height={56}
+          className="h-14 w-14 rounded-full object-cover"
+          style={{ objectPosition: "58% 20%" }}
+          priority
+        />
+        <h1 className="text-2xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
+          Bradley Grantham
+        </h1>
+      </div>
       <p className="mt-4 text-zinc-600 dark:text-zinc-400">
         Hi, I&apos;m Bradley. This is where I write about the things I&apos;m
         building and learning.
