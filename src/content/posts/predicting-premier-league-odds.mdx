@@ -1,0 +1,64 @@
+---
+title: "Predicting Football Matches using EA Player Ratings and Tensorflow"
+date: "2018-07-22"
+summary: "Using neural networks trained on EA FIFA player ratings to predict Premier League match odds, backtested with a Kelly Criterion betting strategy."
+---
+
+![Photo by Mario Klassen on Unsplash](/images/predicting-premier-league-odds/cover.jpg)
+
+### Quick caveat
+
+Because I'm using Pinnacle Sports' closing odds as my target, you could essentially say that I'm just modelling a model. However, the assumption is that by the time that match kicks off, Pinnacle's line will have moved enough because of people betting that the odds should be very close to the *true* probability. A bit like a wisdom of crowds effect. Whether or not this is a good assumption…? All I'll say is that, not only does it work quite well, but it has the desired effect that I was hoping for as I explain later.
+
+### The idea
+
+Last year I developed an expected goals (xG) model - just as a bit of fun and to do some Python programming. This was largely inspired by two people, [Michael Caley](https://twitter.com/MC_of_A) and [Ted Knutson](https://twitter.com/mixedknuts), who I follow on Twitter. xG is, in my opinion, absolutely fantastic. If you want more details on it you should check Michael's pinned tweet. However, as with all football analytic measures, it has it's drawbacks. Once again, Michael goes into these more thoroughly, but I'm going to quickly list them to give an insight into why I decided to do something different. Firstly, it doesn't take account of the players that are playing. For example, if Eden Hazard were missing for Chelsea (a sad reality), you'd obviously expect Chelsea's xG to be lower, however there is not really a way to account for that going into a game. Secondly, at the start of the season, when new players come in, xG can't measure what sort of effect this new player is going to have on the team. Finally, I am yet to see an xG model that generalises well across all of the big 5 leagues (this is something that I've not yet tried to do with my model, but it is an extension I am playing to implement at some point).
+
+I was also very late with my xG model — it has been around for about 4 or 5 years now so my model wasn't anything that someone hadn't done before. I wanted to try and create something that, a) could predict the outcomes of football matches, b) that I'd never seen before and c) that used some form of player data. I could be very wrong, but I've not seen many examples of people applying neural networks to problems in football. So, with all the above in mind, I decided to write something in [Tensorflow](https://www.tensorflow.org/) to try and predict the outcomes of football matches based on a team's starting 11.
+
+### The data
+
+The most obvious player rating system out there is on EA Sport's FIFA games. They get updated yearly, they are independent of league and they are *accurate enough* (to the extent that I've never heard anyone kick off about them so). I only used overall ratings, but maybe a combination of some of the other ratings (defense, attack etc.) might work better. I collected Premier League Ultimate Team ratings from [https://www.fifaindex.com/](https://www.fifaindex.com/) for the last 5 years. I also needed to know which players started which games. For this, [http://www.betstudy.com/](http://www.betstudy.com/) was a great resource. It provided the names, numbers and nationalities of each starting 11 for all the games in the last 5 years in the Premier League. The names from *fifaindex* did not match up exactly with what was seen on *betstudy*, so I used a combination of name, number, team and nationality to match players. Once the matching was done, I had 22 ratings (11 home players and 11 away players) ranging between 50 and 100 for each of the games in Premier League in the last 5 years. This was a good start.
+
+![What a vector would look like for a Chelsea line-up of Courtois; Moses, Rudiger, Alonso, Christensen, Azpilicueta; Fabregas, Kante; Hazard, Morata, Willian.](/images/predicting-premier-league-odds/lineup-vector.png)
+
+However, just using these 22 numbers means we lose potentially vital information in the form of formation. When bad teams play good teams, they tend to park the bus by starting more defenders — I wanted my model to take account of this sort of variation. I therefore chose to model each starting 11 with a vector of size 18. In each 18 dimensional vector, the first component is for the rating of the goalkeeper, the next six components are for the ratings of defenders — if there are only four defenders, two of these components are left as zero. I've included a diagram above to try and help visualise what this 18 dimensional vector might look like given a Chelsea lineup. Under the same methodology, there are seven components for midfielders and four for forwards. This structure of the inputs should allow some inference to be drawn from the formation. For example, if there are six defensive players playing, it's likely that this team is looking to park the bus and the odds should be calculated accordingly. Basically, the formation of the team changes which components of the vector are left as 0 and allows the neural network to draw inferences from this. Furthermore, when we pass these to the neural network, we will pass them as one large 36 dimensional vector — the home team occupying the first 18 dimensions and the away team occupying the final 18 dimensions. By using this structure, the network can also account for home advantage.
+
+Finally, the output of the model will be the 1X2 odds of the match. I used Pinnacle Sports odds which have been collected over the years by [Joseph Buchdahl](https://twitter.com/12Xpert) at [http://www.football-data.co.uk/](http://football-data.co.uk/).
+
+### The model with training and validation loss
+
+![The neural network architecture. Drawn using http://alexlenail.me/NN-SVG/index.html](/images/predicting-premier-league-odds/network-architecture.png)
+
+With all the data collected and formatted, the 'internal' structure of the network had to be decided. I orginally trained the model on the 2013–2014, 2014–2015, 2015–2016 and 2016–2017 Premier League seasons so that I could backtest it on the 2017–2018 season. Out of the 1540 games, I kept 50 aside for the validation set. I then trained the model, using [dropout](https://en.wikipedia.org/wiki/Dropout_%28neural_networks%29) and [early-stopping](https://en.wikipedia.org/wiki/Early_stopping) using multiple different network structures. The one that achieved the smallest validation error was a network with two hidden layers, the first layer with 16 nodes and the second with 8. The error plots for both the training and validation sets are shown below with the early stopping indicated by the vertical line. I won't go into the details of the neural network too much, but the code is all available on GitHub (link at the bottom) if anyone is interested in this. Once I had backtested the model (I show some of the results from the backtesting below), I retrained the network on all the data including the 2017–2018 season, ready for this year.
+
+![A plot to show the training and validation losses (y-axis) against the number of iterations (x-axis). The vertical line represents the early stopping](/images/predicting-premier-league-odds/training-validation-loss.png)
+
+### Backtesting
+
+For the backtesting, I started with a pretend bank of £100, and used the [Kelly Criterion](https://www.pinnacle.com/en/betting-articles/Betting-Strategy/How-to-use-kelly-criterion-for-betting/2BT2LK6K2QWQ7QJ8) to determine stake size. I didn't place bets that had odds greater than 3.2 and placed no bets where the expected value according to the model was less than 2%. On the 2017–2018 season, the model achieves an ROI of 11%. This is *ridiculously* good. I re-ran it multiple times, retrained the model multiple times and kept coming up with the same result. So I also looked a bit deeper into the numbers:
+
+- I won 50% of my bets
+- The average Pinnacle odds were 2.37
+- The average predicted odds were 2.01
+- Average value for the bets was 7.23%, with a maximum of 21.3%
+
+This large of an ROI is definitely down to chance, but the observations above seem very promising that in general the model will make a profit. I've plotted below my bankroll over time, along with the stake sizes, I can share more about the actual bets if anyone is particularly interested.
+
+![A plot to show the bank and stake sizes (y-axis) against the number of bets (x-axis).](/images/predicting-premier-league-odds/bankroll-stake.png)
+
+### 2018/19 Season
+
+Given the great results on the backtesting, I retrained the model including the 2017–2018 season. Using this new model, I can simulate a whole season with a couple of caveats. Firstly, I have to guess the most likely lineups for each team (which is fine, but these will obviously change throughout the season). And secondly, I have had to use 2017–2018 EA player ratings, this isn't a massive issue but there are players, like Salah, whos ratings will certainly change in FIFA 19 - I'll update this simulation with the new ratings and re-run the simulation when FIFA 19 comes out. Also, the transfer window season is still open which is problematic because it looks almost certain that a few players are leaving - like Hazard. Anyway, with this in mind, I ran the season 1,000,000 times (this takes about 8 minutes on my laptop) and calculated the average points, wins, losses and draws. I then calculate the percentage of the 1,000,000 seasons where teams finish 1st, in the top 4 and in the relegation zone. Results are below, and look in line with people's general expectations.
+
+![Predicted Premier League table averaged over 1,000,000 simulated seasons](/images/predicting-premier-league-odds/predicted-table.png)
+
+Going further, I can start to mess around with the teams a bit. For example, let's say Hazard leaves and Chelsea play Willian instead. Willian has a rating of 84 compared to Hazard's 91. Swapping this in the simulated season sees Chelsea drop roughly 4 points! We can do the same with Man United, swapping De Gea with Romero, they drop about 3 points on average. These point differences definitely tie up with what you'd expect — Chelsea are a worse team without Hazard and Man United are worse without De Gea. (I'm yet to re-run this including all of Liverpool's new signings — but it's the next thing that I'm going to do).
+
+Overall, I'm very happy with how this has worked. This obviously isn't a perfect way of modelling a football game. There are so many factors to consider — manager, weather, tiredness, end of season vs. start of season etc. that a model this simply is unlikely to capture the underlying distribution. However, it was fun to make and the fact that teams like Chelsea drop points when you take out their star player shows that it actually works as intended. Next steps will definitely be to see how Liverpool's predictions change when I add in their new players. Then I want to get it set up to automatically use Smarkets API and place bets automatically. Finally, for when I've finished university, I want to train it on the last 5 seasons, across all 5 of the top European leagues, and see if I am able to produce a "one model that fits all". This would also allow me to use this model on things like the World Cup and Euros — which would be very interesting.
+
+Edit: I've made a quick web app if you'd like to try this out yourself — [https://pl-predictor-tensorflow.herokuapp.com](https://pl-predictor-tensorflow.herokuapp.com)
+
+If anyone is interested in the actual code, it is all on GitHub - [https://github.com/BradleyGrantham/fifa-stats-scraper](https://github.com/BradleyGrantham/fifa-stats-scraper)
+
+*Originally published on [Medium](https://medium.com/@bradleygrantham/predicting-premier-league-odds-from-ea-player-bfdb52597392).*
