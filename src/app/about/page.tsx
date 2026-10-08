@@ -10,7 +10,7 @@ export default function AboutPage() {
   return (
     <div className="mx-auto w-full max-w-2xl px-6 py-16">
       <Image
-        src="/images/profile.jpg"
+        src="/images/profile-256.jpg"
         alt="Bradley Grantham"
         width={128}
         height={128}

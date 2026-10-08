@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Static-only Worker: serves the Next.js static export in out/ (no server code). Requests to
+  // static assets are free and unlimited on Workers.
+  "name": "bradleygrantham-com",
+  "compatibility_date": "2026-10-08",
+  "assets": {
+    "directory": "./out",
+    // /about and /about/ both serve about/index.html (matches trailingSlash in next.config.ts)
+    "html_handling": "auto-trailing-slash",
+    // Unknown paths get out/404.html with a 404 status
+    "not_found_handling": "404-page"
+  }
+}

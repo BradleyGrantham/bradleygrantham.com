@@ -10,7 +10,7 @@ export default function Home() {
     <div className="mx-auto w-full max-w-2xl px-6 py-16">
       <div className="flex items-center gap-4">
         <Image
-          src="/images/profile.jpg"
+          src="/images/profile-256.jpg"
           alt="Bradley Grantham"
           width={56}
           height={56}
