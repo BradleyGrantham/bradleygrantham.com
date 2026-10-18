@@ -10,6 +10,8 @@
     { "pattern": "bradleygrantham.com", "custom_domain": true },
     { "pattern": "www.bradleygrantham.com", "custom_domain": true }
   ],
+  // Keep the workers.dev copy as a preview (Wrangler turns it off by default once routes exist).
+  "workers_dev": true,
   "assets": {
     "directory": "./out",
     // /about and /about/ both serve about/index.html (matches trailingSlash in next.config.ts)
