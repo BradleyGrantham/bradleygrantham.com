@@ -207,10 +207,13 @@ const SPRITE_W = 44, SPRITE_H = 58;
 const RESULT_SCALE_MAX = 2;
 const MAX_RESULTS = 10;
 const IS_TOUCH = matchMedia("(pointer: coarse)").matches;
-// Where the API lives: <meta name="fpl-api"> if the page sets one (e.g. the Cloudflare Worker),
+// Where the API lives: on bradleygrantham.com, /fpl/api on the same origin (a route to the fpl-api
+// Worker). Elsewhere (workers.dev preview, local dev), <meta name="fpl-api"> if the page sets one,
 // otherwise next to the page (…/api), as when served by the FastAPI app at / or /fpl/.
 const API_META = document.querySelector('meta[name="fpl-api"]');
-const API = API_META
+const API = location.hostname === "bradleygrantham.com"
+  ? "/fpl/api"
+  : API_META
   ? API_META.content.replace(/\/$/, "")
   : location.pathname.replace(/\/index\.html$/, "/").replace(/\/?$/, "/") + "api";
 
