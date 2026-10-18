@@ -4,6 +4,12 @@
   // static assets are free and unlimited on Workers.
   "name": "bradleygrantham-com",
   "compatibility_date": "2026-10-08",
+  // Cloudflare creates the DNS records and certificates for these on deploy. The www -> root
+  // redirect is a Redirect Rule in the dashboard, not part of this Worker.
+  "routes": [
+    { "pattern": "bradleygrantham.com", "custom_domain": true },
+    { "pattern": "www.bradleygrantham.com", "custom_domain": true }
+  ],
   "assets": {
     "directory": "./out",
     // /about and /about/ both serve about/index.html (matches trailingSlash in next.config.ts)
