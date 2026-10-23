@@ -22,10 +22,6 @@ export default function Home() {
           Bradley Grantham
         </h1>
       </div>
-      <p className="mt-4 text-zinc-600 dark:text-zinc-400">
-        Hi, I&apos;m Bradley. This is where I write about the things I&apos;m
-        building and learning.
-      </p>
 
       {recentPosts.length > 0 && (
         <div className="mt-14">
