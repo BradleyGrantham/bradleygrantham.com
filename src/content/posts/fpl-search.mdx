@@ -1,0 +1,105 @@
+---
+title: "Searching FPL players with natural language"
+date: "2026-10-23"
+summary: "Using Haiku 5.5 to search for FPL players with natural language"
+---
+
+Inspired by this [project](https://x.com/heystefan_/status/2101369117496521042), I wanted to see if I
+could make a system that allowed me to query FPL players using natural language.
+
+It's a pretty simple system. We create a SQLite database of FPL players, and then we
+feed a prompt into Claude Haiku
+5.5 which gives it the schema of the database, some FPL information and requests an output of a SQL query. When we
+get the SQL query, we apply it against the database and then show the list of players to the frontend. I've always been
+guided by Kent Beck's *"[Make it Work, Make it Right, Make it Fast](https://wiki.c2.com/?MakeItWorkMakeItRightMakeItFast)"*. And this was by far the easiest way to get
+it working and working correctly. Although, looking back, it wouldn't have been an
+awful idea to start with Opus 5.5 or Sonnet 5.5 to ensure the outputs were
+definitely as optimised as possible. Anyway, we got it working with Haiku, and it
+worked nicely. Although it was a little bit slow. I've plotted the timings of 555
+searches on a histogram below.
+
+<Histogram
+  title="How long each search took"
+  caption="345 searches against Claude Haiku 5.5, in 100 ms bins."
+  binSize={100}
+  bins={[0, 0, 0, 0, 0, 7, 30, 89, 119, 124, 101, 24, 11, 10, 2, 5, 2, 2, 4, 5, 2, 2, 2, 2, 5, 0, 3, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]}
+  markers={[
+    { label: "p50", value: 920 },
+    { label: "p90", value: 1235 },
+    { label: "p99", value: 2615 },
+  ]}
+/>
+
+## Optimising the speed
+
+The project I initially mentioned used [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev)
+to do its querying. Clearly the timings above are still not as quick as using Jev,
+[but I'm a little dubious of Jev](https://popsa.com/perspectives/authors/bradley-grantham/), so I wanted to experiment with just
+how quick I could get Haiku 5.5.
+
+One of the great things about coding with LLMs these days, in my opinion, is that
+lots of the "*...make it fast...*" part is incredibly easy to do ***if*** you set up
+your problem correctly, with appropriate data and benchmarks. This is a pattern I found
+myself using a lot:
+* Create a dataset of inputs and outputs that you ***know*** are correct
+* Set up a harness that runs your inputs through your system, and evaluates how
+correct the outputs are
+* Ensure your harness also outputs the parameter you're trying to optimise
+* Ask Opus 5.5 to optimise your parameter while keeping your inputs and outputs
+identical
+
+In a more traditional programming system, a prompt you could use would look
+something like:
+> "Your goal is to optimise the speed of this system as much as possible. Keep a log
+of all your hypotheses and the results of these hypotheses. You must not change or
+delete any tests, any solutions must pass all existing tests. Exhaust all possible
+avenues for speed up."
+
+So in this case we have a dataset of a few hundred natural language queries and the
+SQL that they output. Our goal is to speed up this system as much as possible. For
+this problem I wanted to stick with Haiku 5.5, which means we don't have lots of
+avenues to explore - once you've turned `thinking` off, you're really onto prompt
+engineering and some clever sharing of responsibilities between the LLM and the code.
+Regardless, I thought it was an interesting experiment.
+
+The results weren't as effective or as interesting as I would have liked. We were
+able to bring the median time from natural language query to SQL query from 948 ms to
+854 ms. The p99 of requests had a slightly larger saving but still not enough for a
+user to notice a difference - we went from 2,632 ms to 2,229 ms. However, there were a
+couple of interesting things that came out of this experiment.
+
+<Histogram
+  title="How long each search takes now"
+  caption="345 searches with the optimised prompt against Claude Haiku 5.5, in 100 ms bins, on the same scale as the chart above."
+  binSize={100}
+  bins={[0, 0, 0, 0, 0, 1, 25, 83, 101, 49, 32, 8, 9, 7, 4, 7, 8, 1, 2, 1, 1, 1, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}
+  markers={[
+    { label: "p50", value: 854 },
+    { label: "p90", value: 1333 },
+    { label: "p99", value: 2229 },
+  ]}
+/>
+
+### What helped
+- **Lowercase SQL** - asking the model to output lowercase SQL, rather than it
+defaulting to uppercase SQL, meant it output fewer tokens. This accounted for 34ms
+of the 100ms saving.
+- **Moving `LIMIT`s and `ORDER BY`s to the code** - obvious in hindsight, but
+anything being output by the model every time, like a `LIMIT 10` can just be added
+in the code instead. This saved about 28ms on average.
+- **Shorter column names** - abbreviating all the column names, for example changing
+`expected_goal_involvements_per_90` to `xgi90` saved 11ms on average.
+
+### What didn't help
+- **Shrinking the prompt** - didn't help at all.
+- **A compact reply format** - in theory should have helped, but the model kept
+breaking it.
+
+Overall, I found it an interesting experiment, even though the time wasn't massively
+improved. I also did some tests on how fast Haiku was when just asking it to respond
+*"yes"* and this was consistently at 630ms - so if that's the baseline, 854ms for a
+working SQL query feels pretty good.
+
+
+For anyone interested, the code is open sourced on GitHub [here](https://github.com/BradleyGrantham/search-fpl).
+
