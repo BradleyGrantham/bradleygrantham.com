@@ -23,6 +23,14 @@ export default function Home() {
         </h1>
       </div>
 
+      <p className="mt-6 text-zinc-600 dark:text-zinc-400">
+        I currently lead data science and AI at Popsa. This is where I write about side projects
+          or anything else AI/ML-related.{" "}
+        <Link href="/about" className="hover:underline">
+          More about me →
+        </Link>
+      </p>
+
       {recentPosts.length > 0 && (
         <div className="mt-14">
           <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
