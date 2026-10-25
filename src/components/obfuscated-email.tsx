@@ -2,12 +2,17 @@
 
 import { useEffect, useRef } from "react";
 
+// Pass `label` to keep showing it instead of swapping in the address.
 export function ObfuscatedEmail({
   user,
   domain,
+  label,
+  className,
 }: {
   user: string;
   domain: string;
+  label?: string;
+  className?: string;
 }) {
   const ref = useRef<HTMLAnchorElement>(null);
 
@@ -16,13 +21,13 @@ export function ObfuscatedEmail({
     const anchor = ref.current;
     if (anchor) {
       anchor.href = `mailto:${email}`;
-      anchor.textContent = email;
+      if (!label) anchor.textContent = email;
     }
-  }, [user, domain]);
+  }, [user, domain, label]);
 
   return (
-    <a ref={ref} href="#">
-      Email
+    <a ref={ref} href="#" className={className}>
+      {label ?? "Email"}
     </a>
   );
 }

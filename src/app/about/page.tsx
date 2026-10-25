@@ -51,7 +51,7 @@ export default function AboutPage() {
             have a master&apos;s from UCL&apos;s Computer Science
             and Machine Learning department, and a first in Physics from the
             University of Bath (which also included a placement year in Passive
-            Equities at UBS Wealth Management).
+            Equities at UBS Asset Management).
           </p>
         </section>
 

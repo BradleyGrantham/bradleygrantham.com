@@ -1,18 +1,11 @@
 import type { Metadata } from "next";
 import { ObfuscatedEmail } from "@/components/obfuscated-email";
+import { socialLinks } from "@/lib/social-links";
 
 export const metadata: Metadata = {
   title: "Contact | Bradley Grantham",
   description: "Get in touch with Bradley Grantham.",
 };
-
-const links = [
-  { label: "GitHub", href: "https://github.com/BradleyGrantham" },
-  {
-    label: "LinkedIn",
-    href: "https://www.linkedin.com/in/bradley-grantham-7b8b29a8/",
-  },
-];
 
 export default function ContactPage() {
   return (
@@ -31,7 +24,7 @@ export default function ContactPage() {
             <ObfuscatedEmail user="bradley" domain="bradleygrantham.com" />
           </span>
         </li>
-        {links.map((link) => (
+        {socialLinks.map((link) => (
           <li key={link.href}>
             <a
               href={link.href}
