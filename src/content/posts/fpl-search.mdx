@@ -7,6 +7,8 @@ summary: "Using Haiku 5.5 to search for FPL players with natural language"
 Inspired by this [project](https://x.com/heystefan_/status/2101369117496521042), I wanted to see if I
 could make a system that allowed me to query FPL players using natural language.
 
+[![FPL Search answering "cheap in-form midfielders" in 728 ms: ten matching players' shirts, each with their team and form, picked out of a pile of every player in the league. Opens the app.](/images/fpl-search/app.png)](/fpl/)
+
 It's a pretty simple system. We create a SQLite database of FPL players, and then we
 feed a prompt into Claude Haiku
 5.5 which gives it the schema of the database, some FPL information and requests an output of a SQL query. When we
