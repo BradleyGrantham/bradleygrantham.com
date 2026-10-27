@@ -13,6 +13,7 @@ Everything is public and read-only.
 |---|---|
 | `get_about()` | Bradley's bio |
 | `get_cv()` | The CV ("coming soon" until `src/content/cv.md` exists) |
+| `get_golf_handicap()` | Current handicap index and when it was updated, from `src/content/golf.json` |
 | `list_blog_posts()` | Every post: slug, title, date, summary, URL |
 | `get_blog_post(slug)` | One post's full text as Markdown |
 | `search_bradley(query)` | Keyword search over the bio, CV and posts: up to 5 snippets with links |

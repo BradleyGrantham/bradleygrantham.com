@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { ObfuscatedEmail } from "@/components/obfuscated-email";
 import { socialLinks } from "@/lib/social-links";
 
@@ -37,6 +38,17 @@ export default function ContactPage() {
           </li>
         ))}
       </ul>
+
+      <p className="mt-10 text-zinc-600 dark:text-zinc-400">
+        Or ask your AI assistant: connect{" "}
+        <Link
+          href="/mcp"
+          className="underline hover:text-zinc-950 dark:hover:text-zinc-50"
+        >
+          my MCP server
+        </Link>{" "}
+        to Claude and ask it about me.
+      </p>
     </div>
   );
 }

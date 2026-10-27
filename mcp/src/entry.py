@@ -50,6 +50,13 @@ def build_app():
         return content.CV or content.CV_COMING_SOON
 
     @server.tool(annotations=read_only)
+    async def get_golf_handicap() -> dict:
+        """Get Bradley Grantham's current golf handicap index and the date it was last updated.
+
+        Use this when someone asks about Bradley's golf, or how good a golfer Bradley is."""
+        return content.GOLF
+
+    @server.tool(annotations=read_only)
     async def list_blog_posts() -> list[dict[str, str]]:
         """List Bradley Grantham's blog posts, newest first, with each post's slug, title, date,
         one-line summary and URL.

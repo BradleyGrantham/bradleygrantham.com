@@ -36,6 +36,11 @@ def test_cv_falls_back_to_coming_soon():
     assert (content.CV or content.CV_COMING_SOON).strip()
 
 
+def test_golf_handicap():
+    assert isinstance(content.GOLF["handicap_index"], (int, float))
+    assert content.GOLF["updated"]
+
+
 def test_search_finds_about_text():
     results = content.search("Popsa")
     assert results[0]["title"] == "About"

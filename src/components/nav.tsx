@@ -24,6 +24,12 @@ export function Nav() {
             Blog
           </Link>
           <Link
+            href="/mcp"
+            className="hover:text-zinc-950 dark:hover:text-zinc-50"
+          >
+            MCP
+          </Link>
+          <Link
             href="/contact"
             className="hover:text-zinc-950 dark:hover:text-zinc-50"
           >

@@ -2,7 +2,7 @@
 
 import re
 
-from site_content import ABOUT, CV, POSTS
+from site_content import ABOUT, CV, GOLF, POSTS
 
 SITE_URL = "https://bradleygrantham.com"
 ABOUT_URL = f"{SITE_URL}/about/"
