@@ -32,7 +32,7 @@ export default function Home() {
       </p>
 
       <p className="mt-4 text-zinc-600 dark:text-zinc-400">
-        You can also ask Claude about me: this site has its own MCP server.{" "}
+        You can also ask your favourite LLM about me: this site has its own MCP server.{" "}
         <Link href="/mcp" className="hover:underline">
           Connect it →
         </Link>
