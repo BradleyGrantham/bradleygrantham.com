@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Wrangler's local build output, and the Python MCP Worker's environment
+    ".wrangler/**",
+    "mcp/**",
   ]),
 ]);
 

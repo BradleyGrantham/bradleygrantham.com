@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "preview": "next build && wrangler dev",
-    "deploy": "next build && wrangler deploy"
+    "deploy": "next build && wrangler deploy",
+    "mcp:dev": "cd mcp && uv run python sync_content.py && uv run pywrangler dev --port 8788",
+    "mcp:deploy": "cd mcp && uv run python sync_content.py && uv run pywrangler deploy"
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.20",

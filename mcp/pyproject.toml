@@ -1,0 +1,18 @@
+[project]
+name = "bradleygrantham-mcp"
+version = "0.0.0"
+description = "MCP server for bradleygrantham.com, served at /mcp"
+requires-python = ">=3.14"
+dependencies = [
+    "mcp==2.2.0"
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "workers-py",
+    "workers-runtime-sdk"
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

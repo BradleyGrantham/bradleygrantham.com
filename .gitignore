@@ -42,3 +42,11 @@ next-env.d.ts
 
 # wrangler
 .wrangler/
+
+# MCP server (Python Worker)
+/mcp/.venv/
+/mcp/.venv-workers/
+/mcp/python_modules/
+/mcp/pylock.toml
+/mcp/src/site_content.py
+__pycache__/

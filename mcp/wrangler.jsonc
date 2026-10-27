@@ -1,0 +1,11 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  // Python Worker running the MCP server. It has no routes of its own: the site Worker
+  // (../wrangler.jsonc) forwards /mcp to it through a service binding.
+  "name": "bradleygrantham-mcp",
+  "main": "src/entry.py",
+  "compatibility_date": "2026-09-07",
+  "compatibility_flags": ["python_workers", "python_workers_314"],
+  "workers_dev": false,
+  "observability": { "enabled": true }
+}
