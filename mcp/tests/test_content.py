@@ -42,10 +42,9 @@ def test_golf_handicap():
 
 
 def test_search_finds_about_text():
-    results = content.search("Popsa")
-    assert results[0]["title"] == "About"
-    assert results[0]["url"] == content.ABOUT_URL
-    assert "Popsa" in results[0]["snippet"]
+    about = next(result for result in content.search("Popsa") if result["title"] == "About")
+    assert about["url"] == content.ABOUT_URL
+    assert "Popsa" in about["snippet"]
 
 
 def test_search_finds_posts():

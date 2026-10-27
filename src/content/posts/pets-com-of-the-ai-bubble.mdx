@@ -1,0 +1,55 @@
+---
+title: "The Pets.com of the AI Bubble"
+date: "2026-10-27"
+summary: "Why a cheaper, faster decision model like TypeSafe's Jev often costs more than just using Haiku 5.5, and why I can't see a $7.5 billion market for it."
+---
+
+*This post was first published on Popsa Perspectives as [Jev v. Haiku: Why the cheaper decision model costs more](https://popsa.com/perspectives/jev-v-haiku-analysis/).*
+
+I’ll begin by saying I’m all in on AI. At Popsa, the entire engineering team uses Claude Code every day, we get first pass code reviews from Codex or Cursor and we have LLMs embedded into the product with features like Title Suggestion and AI Captions. I know it’s become a weird proxy measure for how into AI you are, but I’ve not written a line of code by hand in over a year now and I think the technology is going to change the world. However, I also think there’s a bit of an economic bubble around AI at the moment and I don’t think anything sums this up better than decision models. More specifically, I can’t see any way in which one of them can be worth $7.5 billion – “*a nearly 37-fold valuation jump in under a month*”.
+
+Six weeks ago, [TypeSafe](https://typesafe.ai/) released [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev). It was the first model of its kind, quickly dubbed a decision model, and it gathered serious momentum and hype online. Since then, TypeSafe has raised a [Series A at a valuation of $7.5 billion](https://www.techtimes.com/articles/328875/20261013/typesafe-ai-raises-870m-jev-decision-model-that-never-generates-text.htm). A number of other companies have also released their own decision models – [OpenAI](https://community.openai.com/t/decisions-api-is-now-available-in-public-beta/1403877), [Cloudflare](https://blog.cloudflare.com/clef-decision-models/) and [Microsoft](https://commandline.microsoft.com/microsoft-decision-1-model-foundry/). By all accounts, OpenAI managed to [release their Decisions API in a rapid 4 weeks](https://fortune.com/2026/10/08/jev-an-ai-for-making-quick-decisions-has-been-a-viral-hit-in-silicon-valley-but-openai-is-hot-on-its-heels/). I personally can’t see a market anywhere near large enough for a $7.5 billion valuation, and given that Anthropic have yet to release a decision model, I’m going to use them as an example as to why they might not bother releasing their own Jev. For the vast majority of problems, Anthropic could argue that “*you don’t need a decision model, just use Haiku*”. And I think there are three main reasons as to why they can say this (comparing to Jev given that that is the top-ranked decision model on [ArtificialAnalysis](https://artificialanalysis.ai/evaluations/artificial-analysis-decision-index)):
+
+1. **Jev isn’t as accurate as Haiku**
+2. **Jev is still *slow***
+3. **Haiku is *cheap***
+
+## Decision models aren’t as accurate as Haiku
+
+As I just mentioned, Artificial Analysis released their own [Decision Index](https://artificialanalysis.ai/evaluations/artificial-analysis-decision-index) a few days ago. On the official index I can’t find a way to include Haiku 5.5, but thankfully they included it on the [tweet](https://x.com/ArtificialAnlys/status/2110046568669904987?s=20) they shared. Haiku performs better on this specific index by 3 points. So if you want more accurate results, *just use Haiku.* “But they’re quicker!”... not by any meaningful magnitude in the tasks that I’d use them. My coding agents these days run for minutes in the background; I care way more that the model picks the correct tool than the speed it takes. Whether my tool call takes 0.1s or 1s, my task still finishes on the order of magnitude of minutes.
+
+But maybe they’re useful in other scenarios? One example going round uses [Jev to help with customer support tickets](https://x.com/muratcan/status/2104959648482701686?s=46). I can see why this could be really useful, so let’s put some real numbers on using Jev vs Haiku on a specific task of customer support – to approve refunds. Again, it’s a task that’s measured on the order of magnitude of minutes so Haiku’s increased latency doesn’t matter to me here. But maybe its cheaper cost will be useful to me?
+
+On the Decision Index, Haiku 5.5 cost $184 per 1M tasks, compared to Jev at $42 per 1M tasks. So we’ll make our test case easy:
+
+- 1M refunds that need approving or rejecting
+- An average order value (AOV) of $40
+- Jev wrongly approves ***0.1%*** more refunds than Haiku
+
+Run all the tickets through your models and you’ve saved yourself $142 by using Jev over Haiku. But that 0.1% means Jev has wrongly refunded 1,000 customers. That’s $40,000 refunded when it shouldn’t have been. So actually, by using Jev over Haiku, you’ve saved yourself… ***minus $39,858***.
+
+## Jev is still slow
+
+It’s obviously a lot quicker than Haiku on almost all tasks – [LLM routing as one example](https://docs.litellm.ai/blog/jev-auto-router-benchmark). What I mean by slow here is that there are still so many problems where Jev is *too slow*. Take the [self-driving demo](https://x.com/jpschroeder/status/2100347770867458384?s=20), where someone claimed to have implemented self-driving entirely with Jev. It was likely a fun weekend project, never meant to be taken as seriously as I’m about to take it, but it has racked up over 740,000 views and 5,000 likes. TypeSafe’s own [introductory blog post](https://typesafe.ai/blog/introducing-system-one-models-and-jev) claims that end-to-end decisions have latency anywhere from 70ms-500ms. After some testing on our office internet, I found average response times to be around 130ms (also what is quoted in the ArtificialAnalysis report). And let’s assume your car always has as good a signal as I get in my office. **This still isn’t quick enough for self-driving**. Researchers at the University of Michigan, in a 2018 study, set the bar at 100 milliseconds of what self-driving cars demand of their hardware. Given the systems that Tesla runs, [36 Hz full-resolution video inputs](https://www.notateslaapp.com/software-updates/version/2024.45.32.10/release-notes), I’d bet good money on today’s self-driving decisions being even faster than that.
+
+Let’s take another, more realistic, example of where a decision model may come into its own – [classification of harmful chat messages in online streams](https://x.com/developedbyed/status/2101628206478512341?s=46). On the surface this suits Jev: you can classify harmful messages and delete them in real time. But this is a problem that has already been solved by many companies. [Roblox](https://about.roblox.com/newsroom/2020/05/scaled-bert-serve-1-billion-daily-requests-cpus) have been running BERT classifiers at over a billion requests per day, in under 20ms per request, *on CPUs,* since 2021. Why would they use Jev at both a higher price and a higher latency? I do accept that in this case there are going to be people in a position where they want a classifier and don’t have access to the training data – maybe Jev can be put to good use for these people (or maybe there are other solutions to getting training data these days, which I’ll touch on briefly later on).
+
+## Haiku is cheap
+
+Anthropic released Haiku 5.5 on the 7th October, at $0.10 per million input tokens and $0.50 per million output tokens. This is 10x cheaper than the previous Haiku 4.5. This is before you take prompt caching into account. Haiku 5.5 cached input tokens are actually ***cheaper*** than input tokens to Jev.
+
+Of course, output tokens are free on Jev. But my yes/no classifier is only going to cost me one output token per request anyway.
+
+Furthermore, assuming Anthropic follows their Haiku 4.5 release (and OpenAI’s recent releases) it’s fair to expect a batch mode for Haiku 5.5 to be released soon. So for anything that you don’t need in realtime you’ll be able to use Haiku 5.5 at half its current price.
+
+Oh, and finally, *Haiku will just keep getting cheaper.* It’s not outrageous to assume Haiku 6.5 is going to be 10x cheaper than Haiku 5.5 sometime next year.
+
+I’ll make one final argument for the people that don’t have their own data to either train or fine-tune their own specialised classifier. I think this argument is running out of legs. Ask Claude Opus 5.5 to build you a classification dataset and train a small classifier, and it will gladly spin up Claude Haiku 5.5 subagents to label your data and train the classifier. (You *shouldn’t* do this as it’s technically distilling and would be against their terms, but if you did, you could run it overnight, using five-hour limits you might not otherwise have used, so it is *essentially free*.)
+
+So to summarise:
+
+- Decision models aren’t as accurate as Haiku 5.5
+- Decision models are a lot quicker than Haiku 5.5, but they’re still not ***very*** quick
+- Decision models are, currently, cheaper than Haiku 5.5
+
+Which leaves us with, in my opinion, a very limited set of problems suited to decision models. A set of problems where you don’t need the highest of accuracies, you don’t need sub-100ms latencies, you have money to the throw at the problem (but not so much money you can create your own solution) and you don’t have your own data to train a specialised classifier. This class of problems definitely exists and decision models are fantastic for them. I’m just not sure there are *enough of these problems* to justify the current hype around this class of models. To justify a $7.5 billion valuation, TypeSafe needs roughly $190 million a year in revenue. At Jev's prices, that's around 12 billion paid decisions every single day, about [twice the number of daily chat messages sent on all of Roblox](https://about.roblox.com/newsroom/2025/07/roblox-ai-moderation-massive-scale). Personally, I just can’t see the market being this big.
