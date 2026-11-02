@@ -68,10 +68,13 @@ curl -X POST http://localhost:8787/mcp \
 
 ## Deploy
 
-Deploy this Worker before the site (the site's service binding needs it to exist):
+Cloudflare Workers Builds deploys this Worker on every push to `main`, alongside the site Worker,
+so content changes (new posts, the CV) reach the server without any extra step. It usually goes
+live a few minutes after the site.
+
+To deploy by hand (e.g. setting it up from scratch, when it has to exist before the site's service
+binding can point at it):
 
 ```sh
 npm run mcp:deploy
 ```
-
-Workers Builds only deploys the site Worker, so changes here are deployed by hand for now.

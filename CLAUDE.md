@@ -13,6 +13,8 @@ npm run build   # static export (Turbopack) to out/
 npm run preview # build, then serve out/ locally through the Worker (wrangler dev)
 npm run deploy  # build, then deploy to Cloudflare by hand (wrangler deploy)
 npm run lint    # eslint (flat config, eslint.config.mjs)
+npm run mcp:dev     # the MCP server Worker (mcp/) at http://localhost:8788/mcp
+npm run mcp:deploy  # deploy the MCP server Worker by hand
 ```
 
 There is no test suite configured in this repo. `npm run start` doesn't work: there's no Next.js server in static-export mode.
@@ -21,7 +23,7 @@ There is no test suite configured in this repo. `npm run start` doesn't work: th
 
 This is a personal site/blog: Next.js App Router + TypeScript + Tailwind CSS, with blog posts authored as local MDX files (no CMS or database).
 
-**Hosting:** a static export (`output: "export"` in `next.config.ts`) served by an assets-only Cloudflare Worker, configured in `wrangler.jsonc` (no server code; `bradleygrantham.com` and `www` are its custom domains). Cloudflare Workers Builds is connected to the GitHub repo and runs `npm run build` + `npx wrangler deploy` on every push to `main`. Because it's a static export, Next.js rewrites, redirects, headers, middleware and image optimisation aren't available. Images are pre-sized by hand (e.g. `public/images/profile-256.jpg`), and redirects (www → root) live in Cloudflare Redirect Rules. DNS is on Cloudflare; the domain is still registered with Amazon (Route 53 Domains). Email is Google Workspace, so the MX / DKIM (`google._domainkey`) / SPF / DMARC records in Cloudflare DNS must be kept.
+**Hosting:** a static export (`output: "export"` in `next.config.ts`) served by an assets-only Cloudflare Worker, configured in `wrangler.jsonc` (no server code; `bradleygrantham.com` and `www` are its custom domains). Cloudflare Workers Builds is connected to the GitHub repo and runs `npm run build` + `npx wrangler deploy` on every push to `main`. The MCP server at `/mcp` is a separate Python Worker in `mcp/` (see `mcp/README.md`), reached through the site Worker's `MCP` service binding; Workers Builds deploys it on push to `main` too, so new content (posts, `src/content/cv.md`) reaches it with no extra step. Because it's a static export, Next.js rewrites, redirects, headers, middleware and image optimisation aren't available. Images are pre-sized by hand (e.g. `public/images/profile-256.jpg`), and redirects (www → root) live in Cloudflare Redirect Rules. DNS is on Cloudflare; the domain is still registered with Amazon (Route 53 Domains). Email is Google Workspace, so the MX / DKIM (`google._domainkey`) / SPF / DMARC records in Cloudflare DNS must be kept.
 
 **Blog content pipeline:**
 - Posts live as `.mdx` files in `src/content/posts/`, each with `title` / `date` / `summary` frontmatter.
