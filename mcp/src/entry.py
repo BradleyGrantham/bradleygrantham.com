@@ -13,9 +13,9 @@ ALLOWED_ORIGINS = [
 ]
 
 INSTRUCTIONS = """\
-Bradley Grantham's personal MCP server: Bradley's bio, blog posts and (soon) CV, taken from
+Bradley Grantham's personal MCP server: Bradley's bio, CV and blog posts, taken from
 https://bradleygrantham.com. Everything here is public and read-only. Use search_bradley for
-questions about a topic, get_about for who Bradley is, and the blog tools for Bradley's writing.
+questions about a topic, get_about for who Bradley is, get_cv for Bradley's career, and the blog tools for Bradley's writing.
 Link to the pages on bradleygrantham.com when quoting them."""
 
 
@@ -45,9 +45,11 @@ def build_app():
     async def get_cv() -> str:
         """Get Bradley Grantham's CV (work history, education and skills) as Markdown.
 
-        Use this for detailed questions about Bradley's career. Not published yet: for now it says so
-        and points to get_about."""
-        return content.CV or content.CV_COMING_SOON
+        Use this for detailed questions about Bradley's career, experience, projects, skills or
+        education."""
+        if not content.CV:
+            return content.CV_COMING_SOON
+        return f"Bradley Grantham's CV, from {content.CV_URL}\n\n{content.CV}"
 
     @server.tool(annotations=read_only)
     async def get_golf_handicap() -> dict:
@@ -108,7 +110,7 @@ def build_app():
 
     @server.resource("bradley://cv", name="cv", title="Bradley's CV", mime_type="text/markdown")
     async def cv_resource() -> str:
-        """Bradley Grantham's CV (coming soon)."""
+        """Bradley Grantham's CV: work history, projects, skills and education."""
         return content.CV or content.CV_COMING_SOON
 
     @server.resource("bradley://blog", name="blog", title="Blog posts", mime_type="application/json")

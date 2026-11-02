@@ -6,8 +6,9 @@ from site_content import ABOUT, CV, GOLF, POSTS
 
 SITE_URL = "https://bradleygrantham.com"
 ABOUT_URL = f"{SITE_URL}/about/"
+CV_URL = f"{SITE_URL}/cv/"
 CV_COMING_SOON = (
-    "Bradley's CV is coming soon. In the meantime, get_about has a summary of Bradley's role "
+    "Bradley's CV isn't available right now. In the meantime, get_about has a summary of Bradley's role "
     f"and background, and {ABOUT_URL} has the same."
 )
 
@@ -58,7 +59,7 @@ def _documents() -> list[dict[str, str]]:
     """Everything searchable, as (title, url, text) chunks."""
     docs = [{"title": "About", "url": ABOUT_URL, "text": text} for text in _sections(ABOUT)]
     if CV:
-        docs += [{"title": "CV", "url": ABOUT_URL, "text": text} for text in _sections(CV)]
+        docs += [{"title": "CV", "url": CV_URL, "text": text} for text in _sections(CV)]
     for post in POSTS:
         url = post_url(post["slug"])
         docs.append({"title": post["title"], "url": url, "text": f"{post['title']}. {post['summary']}"})

@@ -12,7 +12,7 @@ Everything is public and read-only.
 | Tool | Does |
 |---|---|
 | `get_about()` | Bradley's bio |
-| `get_cv()` | The CV ("coming soon" until `src/content/cv.md` exists) |
+| `get_cv()` | The CV, from `src/content/cv.md` (also rendered by the CV page) |
 | `get_golf_handicap()` | Current handicap index and when it was updated, from `src/content/golf.json` |
 | `list_blog_posts()` | Every post: slug, title, date, summary, URL |
 | `get_blog_post(slug)` | One post's full text as Markdown |
@@ -36,7 +36,7 @@ uv run pytest
 ## Content
 
 The server's text comes from the site's own content, so there's one copy to edit. `sync_content.py`
-turns `../src/content/about.md` (also rendered by the About page) into `src/site_content.py`, which
+turns `../src/content/about.md`, `cv.md`, `golf.json` and the blog posts into `src/site_content.py`, which
 isn't committed. `npm run mcp:dev` and `npm run mcp:deploy` run it first.
 
 ## Development

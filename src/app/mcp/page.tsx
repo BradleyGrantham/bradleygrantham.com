@@ -26,12 +26,13 @@ const tools = [
   { name: "get_about", description: "Essentially the /about page." },
   { name: "list_blog_posts", description: "Every blog post I've written." },
   { name: "get_blog_post", description: "Self-explanatory." },
-  { name: "get_cv", description: "CV (coming soon)." },
+  { name: "get_cv", description: "Essentially the /cv page." },
   { name: "get_golf_handicap", description: "My current golf handicap." },
 ];
 
 const examplePrompts = [
   "Who is Bradley Grantham?",
+  "What has Bradley shipped with LLMs at Popsa?",
   "What has Bradley written about LLMs?",
   "Summarise Bradley's FPL search post.",
 ];
@@ -114,6 +115,7 @@ export default function McpPage() {
           <p className="mt-4">
             The same content is also available as resources:{" "}
             <code className="font-mono text-sm">bradley://about</code>,{" "}
+            <code className="font-mono text-sm">bradley://cv</code>,{" "}
             <code className="font-mono text-sm">bradley://blog</code> and one per post.
           </p>
         </section>

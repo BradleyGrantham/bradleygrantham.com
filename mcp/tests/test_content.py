@@ -1,3 +1,5 @@
+import re
+
 import content
 
 
@@ -32,8 +34,17 @@ def test_post_bodies_have_no_jsx_or_relative_links():
         assert "](/" not in post["body"]
 
 
-def test_cv_falls_back_to_coming_soon():
-    assert (content.CV or content.CV_COMING_SOON).strip()
+def test_cv_is_published():
+    assert content.CV and "Popsa" in content.CV
+
+
+def test_cv_has_no_phone_number():
+    assert not re.search(r"\b0\d{4} ?\d{6}\b|\+44", content.CV)
+
+
+def test_search_finds_cv_text():
+    result = next(result for result in content.search("Channel 4 contextual moments") if result["title"] == "CV")
+    assert result["url"] == content.CV_URL
 
 
 def test_golf_handicap():
