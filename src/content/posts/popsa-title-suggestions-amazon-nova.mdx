@@ -1,0 +1,15 @@
+---
+title: "How Popsa used Amazon Nova for personalised title suggestions"
+date: "2026-04-27"
+summary: "A post I co-wrote for the AWS Machine Learning Blog on moving Popsa's Title Suggestion feature from a graph algorithm to LLMs on Amazon Bedrock."
+---
+
+*This post was published on the AWS Machine Learning Blog as [How Popsa used Amazon Nova to inspire customers with personalised title suggestions](https://aws.amazon.com/blogs/machine-learning/how-popsa-used-amazon-nova-to-inspire-customers-with-personalised-title-suggestions/), co-written with Hugo Dugdale from Popsa and Ayman ElSayed and Ellen Franklin from AWS.*
+
+Title Suggestion in the Popsa app suggests a title for your photo book from the photos you've picked. It started out as a rule-based graph algorithm working from photo metadata. The post covers how we replaced it with LLMs on Amazon Bedrock:
+
+- **Claude 3 Haiku with retrieval-based few-shot prompting.** Positive feedback on suggestions went from 58% to 71%.
+- **A/B testing Amazon Nova models.** Nova Pro got the highest satisfaction (73% positive), and Nova Lite matched Claude 3 Haiku's quality at a lower cost and latency.
+- **Streaming with the ConverseStream API.** Time to first suggestion dropped from 1.41s to 0.92s.
+
+The feature generated over 5.5 million titles in 2025. [Read the full post on the AWS blog](https://aws.amazon.com/blogs/machine-learning/how-popsa-used-amazon-nova-to-inspire-customers-with-personalised-title-suggestions/).
